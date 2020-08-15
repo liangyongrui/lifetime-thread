@@ -22,7 +22,7 @@
       alt="docs.rs docs" />
   </a>
   <!-- ci -->
-  <a href="https://docs.rs/lifetime-thread">
+  <a href="https://github.com/liangyongrui/lifetime-thread">
     <img src="https://github.com/liangyongrui/lifetime-thread/workflows/Rust/badge.svg"
       alt="ci" />
   </a>

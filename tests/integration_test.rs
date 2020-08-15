@@ -41,3 +41,26 @@ fn it_works2() {
     thread::sleep(Duration::from_millis(10));
     assert_eq!(*outer, "xxx")
 }
+
+#[derive(Debug)]
+struct DropTest {
+    x: i32,
+}
+impl Drop for DropTest {
+    fn drop(&mut self) {
+        println!("drop: {}", self.x);
+    }
+}
+#[test]
+fn test_drop() {
+    let s = DropTest { x: 123 };
+    let outer = lifetime_thread::spawn(s, |inner| {
+        println!("begin");
+        while let Some(t) = inner.get() {
+            assert_eq!(t.x, 123)
+        }
+        println!("over")
+    });
+    thread::sleep(Duration::from_millis(1));
+    assert_eq!(outer.x, 123)
+}
