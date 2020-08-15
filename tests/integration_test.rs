@@ -1,14 +1,13 @@
-use async_std::task;
 use std::{thread, time::Duration};
 
 #[test]
 fn it_works() {
-    let s = String::from("xxx");
+    let s = "xxx";
     let outer = lifetime_thread::spawn(s, |inner| {
         println!("begin");
         while let Some(t) = inner.get() {
             println!("ok! {}", t);
-            assert_eq!(t, "xxx")
+            assert_eq!(*t, "xxx")
         }
         println!("over")
     });
@@ -18,16 +17,16 @@ fn it_works() {
 
 #[async_std::test]
 async fn async_works() {
-    let s = String::from("xxx");
+    let s = "xxx";
     let outer = lifetime_thread::async_spawn(s, |inner| async move {
         println!("begin");
         while let Some(t) = inner.get() {
             println!("ok! {}", t);
-            assert_eq!(t, "xxx")
+            assert_eq!(*t, "xxx")
         }
         println!("over")
     });
-    task::sleep(Duration::from_millis(1)).await;
+    async_std::task::sleep(Duration::from_millis(1)).await;
     assert_eq!(*outer, "xxx")
 }
 
@@ -80,4 +79,16 @@ fn test_drop2() {
         println!("outer over")
     }
     thread::sleep(Duration::from_millis(10));
+}
+#[test]
+fn test_drop3() {
+    for _ in 0..10 {
+        let s = DropTest { x: 123 };
+        let outer = lifetime_thread::spawn(s, |inner| {
+            println!("begin: {:?}", inner.get());
+            println!("inner over")
+        });
+        println!("outer: {:?}", outer.x);
+        println!("outer over")
+    }
 }
