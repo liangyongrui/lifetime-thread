@@ -53,14 +53,31 @@ impl Drop for DropTest {
 }
 #[test]
 fn test_drop() {
-    let s = DropTest { x: 123 };
-    let outer = lifetime_thread::spawn(s, |inner| {
-        println!("begin");
-        while let Some(t) = inner.get() {
-            assert_eq!(t.x, 123)
-        }
-        println!("over")
-    });
-    thread::sleep(Duration::from_millis(1));
-    assert_eq!(outer.x, 123)
+    {
+        let s = DropTest { x: 123 };
+        let outer = lifetime_thread::spawn(s, |_| println!("inner over"));
+        thread::sleep(Duration::from_millis(1));
+        assert_eq!(outer.x, 123);
+        println!("outer over")
+    }
+    thread::sleep(Duration::from_millis(10));
+}
+
+#[test]
+fn test_drop2() {
+    {
+        let s = DropTest { x: 123 };
+        let outer = lifetime_thread::spawn(s, |inner| {
+            println!("begin");
+            while let Some(t) = inner.get() {
+                thread::sleep(Duration::from_millis(10));
+                assert_eq!(t.x, 123)
+            }
+            println!("inner over")
+        });
+        assert_eq!(outer.x, 123);
+        thread::sleep(Duration::from_millis(1));
+        println!("outer over")
+    }
+    thread::sleep(Duration::from_millis(10));
 }
