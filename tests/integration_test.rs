@@ -1,3 +1,4 @@
+use async_std::task;
 use std::{thread, time::Duration};
 
 #[test]
@@ -18,7 +19,7 @@ fn it_works() {
 #[async_std::test]
 async fn async_works() {
     let s = String::from("xxx");
-    let outer = lifetime_thread::async_spawn(s, |inner| {
+    let outer = lifetime_thread::async_spawn(s, |inner| async move {
         println!("begin");
         while let Some(t) = inner.get() {
             println!("ok! {}", t);
@@ -26,7 +27,7 @@ async fn async_works() {
         }
         println!("over")
     });
-    thread::sleep(Duration::from_millis(1));
+    task::sleep(Duration::from_millis(1)).await;
     assert_eq!(*outer, "xxx")
 }
 

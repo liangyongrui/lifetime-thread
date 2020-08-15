@@ -12,7 +12,7 @@
 
 use crossbeam_epoch::{Atomic, Owned};
 use std::ops::Deref;
-use std::{marker::PhantomData, sync::atomic::Ordering, thread};
+use std::{future::Future, marker::PhantomData, sync::atomic::Ordering, thread};
 
 pub struct Inner<T> {
     flag_ptr: usize,
@@ -123,12 +123,12 @@ where
         _type: PhantomData,
     }
 }
-
 /// Spawns a new async task, return `data` warpped in `Outer`
-pub fn async_spawn<T, F>(data: T, f: F) -> Outer<T>
+pub fn async_spawn<T, F, FU>(data: T, f: F) -> Outer<T>
 where
     T: Send + 'static,
-    F: FnOnce(Inner<T>) + Send + 'static,
+    FU: Future<Output = ()> + Send + 'static,
+    F: FnOnce(Inner<T>) -> FU + Send + 'static,
 {
     let flag_ptr = Box::into_raw(Box::new(Atomic::new(0b11))) as usize;
     let data_ptr = Box::into_raw(Box::new(data)) as usize;
@@ -137,7 +137,7 @@ where
         data_ptr,
         _type: PhantomData,
     };
-    async_std::task::spawn(async { f(inner) });
+    async_std::task::spawn(async { f(inner).await });
     Outer {
         flag_ptr,
         data_ptr,

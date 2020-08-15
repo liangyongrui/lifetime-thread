@@ -46,6 +46,7 @@ scenes to be used:
 ## Basic usage
 
 ```rust
+use async_std::task;
 use std::{thread, time::Duration};
 
 #[test]
@@ -60,6 +61,21 @@ fn it_works() {
         println!("over")
     });
     thread::sleep(Duration::from_millis(1));
+    assert_eq!(*outer, "xxx")
+}
+
+#[async_std::test]
+async fn async_works() {
+    let s = String::from("xxx");
+    let outer = lifetime_thread::async_spawn(s, |inner| async move {
+        println!("begin");
+        while let Some(t) = inner.get() {
+            println!("ok! {}", t);
+            assert_eq!(t, "xxx")
+        }
+        println!("over")
+    });
+    task::sleep(Duration::from_millis(1)).await;
     assert_eq!(*outer, "xxx")
 }
 ```

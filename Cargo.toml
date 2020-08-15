@@ -1,6 +1,6 @@
 [package]
 name = "lifetime-thread"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["liangyongrui <leungyongrui@gmail.com>"]
 edition = "2018"
 description = "A thread with a lifetime. Divide a value into master and slave. After the lifetime of the master value ends, the slave value will not be accessible."
