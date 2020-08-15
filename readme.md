@@ -76,6 +76,13 @@ ok! xxx
 over
 ```
 
+## Features
+
+- [ ] Different runtime
+  - [x] sync (Multithreading): lifetime_thread::spawn
+  - [x] async-std: lifetime_thread::async_spawn
+  - [ ] tokio
+
 ## License
 
 Licensed under either of

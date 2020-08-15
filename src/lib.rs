@@ -123,3 +123,24 @@ where
         _type: PhantomData,
     }
 }
+
+/// Spawns a new async task, return `data` warpped in `Outer`
+pub fn async_spawn<T, F>(data: T, f: F) -> Outer<T>
+where
+    T: Send + 'static,
+    F: FnOnce(Inner<T>) + Send + 'static,
+{
+    let flag_ptr = Box::into_raw(Box::new(Atomic::new(0b11))) as usize;
+    let data_ptr = Box::into_raw(Box::new(data)) as usize;
+    let inner = Inner {
+        flag_ptr,
+        data_ptr,
+        _type: PhantomData,
+    };
+    async_std::task::spawn(async { f(inner) });
+    Outer {
+        flag_ptr,
+        data_ptr,
+        _type: PhantomData,
+    }
+}
