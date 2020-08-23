@@ -1,11 +1,11 @@
 use crossbeam_epoch::{Atomic, Owned};
 use std::{marker::PhantomData, sync::atomic::Ordering};
 
-const fn drop_inner(flag: usize) -> usize {
+const fn drop_inner(flag: u8) -> u8 {
     flag & 0b01
 }
 
-const fn is_outer_live(flag: usize) -> bool {
+const fn is_outer_live(flag: u8) -> bool {
     flag & 0b01 > 0
 }
 
@@ -27,7 +27,7 @@ impl<T> Inner<T> {
     #[must_use]
     pub fn get(&self) -> Option<&T> {
         let guard = crossbeam_epoch::pin();
-        let flag_ptr = unsafe { &*(self.flag_ptr as *const Atomic<usize>) };
+        let flag_ptr = unsafe { &*(self.flag_ptr as *const Atomic<u8>) };
         let flag = flag_ptr.load(Ordering::Acquire, &guard);
         let old = unsafe { *flag.deref() };
         if is_outer_live(old) {
@@ -40,7 +40,7 @@ impl<T> Inner<T> {
 impl<T> Drop for Inner<T> {
     fn drop(&mut self) {
         let guard = crossbeam_epoch::pin();
-        let flag_ptr = unsafe { &*(self.flag_ptr as *const Atomic<usize>) };
+        let flag_ptr = unsafe { &*(self.flag_ptr as *const Atomic<u8>) };
         loop {
             let flag = flag_ptr.load(Ordering::Acquire, &guard);
             let old = unsafe { *flag.deref() };

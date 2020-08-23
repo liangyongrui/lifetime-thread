@@ -2,7 +2,7 @@ use crossbeam_epoch::{Atomic, Owned};
 use std::ops::Deref;
 use std::{marker::PhantomData, sync::atomic::Ordering};
 
-const fn drop_outer(flag: usize) -> usize {
+const fn drop_outer(flag: u8) -> u8 {
     flag & 0b10
 }
 
@@ -24,7 +24,7 @@ impl<T> Deref for Outer<T> {
 impl<T> Drop for Outer<T> {
     fn drop(&mut self) {
         let guard = crossbeam_epoch::pin();
-        let flag_ptr = unsafe { &*(self.flag_ptr as *const Atomic<usize>) };
+        let flag_ptr = unsafe { &*(self.flag_ptr as *const Atomic<u8>) };
         loop {
             let flag = flag_ptr.load(Ordering::Acquire, &guard);
             let old = unsafe { *flag.deref() };

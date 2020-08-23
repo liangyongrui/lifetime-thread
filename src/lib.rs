@@ -23,7 +23,7 @@ where
     T: Send + 'static,
     F: FnOnce(Inner<T>) + Send + 'static,
 {
-    let flag_ptr = Box::into_raw(Box::new(Atomic::new(0b11))) as usize;
+    let flag_ptr = Box::into_raw(Box::new(Atomic::new(0b11_u8))) as usize;
     let data_ptr = Box::into_raw(Box::new(data)) as usize;
     let inner = Inner::new(flag_ptr, data_ptr);
     thread::spawn(move || f(inner));
@@ -37,7 +37,7 @@ where
     FU: Future<Output = ()> + Send + 'static,
     F: FnOnce(Inner<T>) -> FU + Send + 'static,
 {
-    let flag_ptr = Box::into_raw(Box::new(Atomic::new(0b11))) as usize;
+    let flag_ptr = Box::into_raw(Box::new(Atomic::new(0b11_u8))) as usize;
     let data_ptr = Box::into_raw(Box::new(data)) as usize;
     let inner = Inner::new(flag_ptr, data_ptr);
     async_std::task::spawn(async { f(inner).await });

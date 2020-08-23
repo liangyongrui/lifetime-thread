@@ -1,7 +1,7 @@
 <h1 align="center">Lifetime Thread</h1>
 <div align="center">
  <strong>
-    A thread with a lifetime. Divide a value into master and slave. After the lifetime of the master value ends, the slave value will not be accessible.
+    A lock-free thread with a lifetime. Divide a value into master and slave. After the lifetime of the master value ends, the slave value will not be accessible.
  </strong>
 </div>
 <br />
@@ -36,7 +36,7 @@
 
 ## Introduction
 
-A thread with a lifetime. Divide a value into master and slave. After the lifetime of the master value ends, the slave value will not be accessible.
+A lock-free thread with a lifetime. Divide a value into master and slave. After the lifetime of the master value ends, the slave value will not be accessible.
 
 scenes to be used:
 
