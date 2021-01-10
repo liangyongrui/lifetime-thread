@@ -1,6 +1,6 @@
 [package]
 name = "lifetime-thread"
-version = "0.2.3"
+version = "0.3.0"
 authors = ["liangyongrui <leungyongrui@gmail.com>"]
 edition = "2018"
 description = "A thread with a lifetime. Divide a value into master and slave. After the lifetime of the master value ends, the slave value will not be accessible."
@@ -12,5 +12,5 @@ categories = ['lifetime', 'thread', 'lock-free']
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-crossbeam-epoch = "0.8"
-async-std = { version = "1.6", features = ["unstable", "attributes"] }
+crossbeam-epoch = "0.9"
+tokio = { version = "1", features = ["full"] }

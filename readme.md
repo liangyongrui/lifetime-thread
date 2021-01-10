@@ -55,27 +55,30 @@ fn it_works() {
         println!("begin");
         while let Some(t) = inner.get() {
             println!("ok! {}", t);
-            assert_eq!(*t, "xxx")
+            assert_eq!(*t, "xxx");
+            thread::sleep(Duration::from_millis(1));
         }
         println!("over")
     });
-    thread::sleep(Duration::from_millis(1));
+    thread::sleep(Duration::from_millis(10));
     assert_eq!(*outer, "xxx")
 }
 
-#[async_std::test]
+#[tokio::test]
 async fn async_works() {
     let s = "xxx";
     let outer = lifetime_thread::async_spawn(s, |inner| async move {
         println!("begin");
         while let Some(t) = inner.get() {
             println!("ok! {}", t);
-            assert_eq!(*t, "xxx")
+            assert_eq!(*t, "xxx");
+            tokio::time::sleep(Duration::from_millis(1)).await;
         }
         println!("over")
     });
-    async_std::task::sleep(Duration::from_millis(1)).await;
-    assert_eq!(*outer, "xxx")
+    tokio::time::sleep(Duration::from_millis(10)).await;
+    assert_eq!(*outer, "xxx");
+    drop(outer);
 }
 ```
 
@@ -93,10 +96,9 @@ over
 
 ## Features
 
-- [ ] Different runtime
+- [x] Different runtime
   - [x] sync (Multithreading): lifetime_thread::spawn
-  - [x] async-std: lifetime_thread::async_spawn
-  - [ ] tokio
+  - [x] tokio: lifetime_thread::async_spawn
 
 ## License
 

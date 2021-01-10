@@ -40,6 +40,6 @@ where
     let flag_ptr = Box::into_raw(Box::new(Atomic::new(0b11_u8))) as usize;
     let data_ptr = Box::into_raw(Box::new(data)) as usize;
     let inner = Inner::new(flag_ptr, data_ptr);
-    async_std::task::spawn(async { f(inner).await });
+    tokio::spawn(async { f(inner).await });
     Outer::new(flag_ptr, data_ptr)
 }
